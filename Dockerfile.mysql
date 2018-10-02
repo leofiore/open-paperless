@@ -1,0 +1,30 @@
+FROM python:2-alpine3.7
+
+ENV ALPINE_VERSION 3.7
+
+WORKDIR /usr/src/app
+
+COPY ./requirements ./requirements/
+
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/v$ALPINE_VERSION/community" >> /etc/apk/repositories \
+	&& apk add --no-cache gcc g++ graphviz libjpeg libmagic libpng-dev linux-headers musl-dev mariadb-client-libs mariadb-dev \
+	libreoffice tiff-dev ghostscript gnupg poppler-utils tesseract-ocr tesseract-ocr-data-fra libzmq supervisor \
+    && pip install --no-cache-dir -r requirements/production.txt \
+    && pip install mysqlclient \
+    && apk del --purge --no-cache musl-dev linux-headers gcc g++
+
+ENV DATABASE_NAME mayan_edms
+ENV DATABASE_USER paperless
+ENV DATABASE_HOST mysql
+ENV DATABASE_PASSWORD serin
+ENV DATABASE_PORT "3306"
+ENV REDIS_URL "redis://127.0.0.1:6379/0"
+ENV DJANGO_SETTINGS_MODULE "mayan.settings.testing.db_mysql"
+
+COPY . .
+
+RUN ./manage.py collectstatic --noinput
+
+EXPOSE 8000
+
+CMD supervisord -c /usr/src/app/supervisord-sqlite.ini
