@@ -6,6 +6,7 @@ from . import *  # NOQA
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = ['*']
 
+
 TEMPLATES[0]['OPTIONS']['loaders'] = (
     (
         'django.template.loaders.cached.Loader', (
@@ -16,3 +17,6 @@ TEMPLATES[0]['OPTIONS']['loaders'] = (
 )
 
 CELERY_ALWAYS_EAGER = False
+
+BROKER_URL = os.getenv('REDIS_URL', 'redis://127.0.0.1:6379/0')
+CELERY_RESULT_BACKEND = os.getenv('REDIS_URL', 'redis://127.0.0.1:6379/0')

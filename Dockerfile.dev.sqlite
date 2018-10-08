@@ -13,7 +13,7 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/v$ALPINE_VERSION/community" >> /e
     && apk del --purge --no-cache musl-dev linux-headers gcc g++
 
 ENV REDIS_URL "redis://127.0.0.1:6379/0"
-ENV DJANGO_SETTINGS_MODULE "mayan.settings"
+ENV DJANGO_SETTINGS_MODULE "mayan.settings.production"
 
 COPY . .
 
@@ -21,4 +21,4 @@ RUN ./manage.py collectstatic --noinput
 
 EXPOSE 8000
 
-CMD supervisord -c /usr/src/app/supervisord-sqlite.ini
+CMD supervisord -n -c /usr/src/app/supervisord-sqlite.ini

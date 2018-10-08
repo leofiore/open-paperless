@@ -1,0 +1,26 @@
+version: "2.3"
+services:
+
+  redis:
+    image: redis:alpine
+
+
+  paper:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev.sqlite
+    ports:
+      - "0.0.0.0:9999:8000"
+    volumes:
+      - ./db.sqlite3:/usr/src/app/mayan/media/db.sqlite3
+      - ./document_cache:/usr/src/app/mayan/media/document_cache
+      - ./document_storage:/usr/src/app/mayan/media/document_storage
+    depends_on:
+      - redis
+    environment:
+      DATABASE_NAME: mayan_edms
+      DATABASE_USER: root
+      DATABASE_HOST: mysql
+      DATABASE_PORT: 3306
+      DATABASE_PASS: serin
+      REDIS_URL: "redis://redis:6379/0"
