@@ -82,6 +82,7 @@ INSTALLED_APPS = (
     # Mayan EDMS
     'cabinets',
     'checkouts',
+    'register',
     'document_comments',
     'document_indexing',
     'document_parsing',
