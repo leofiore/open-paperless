@@ -5,6 +5,10 @@ import logging
 import os
 import uuid
 
+from reportlab.pdfgen import canvas
+from PyPDF2 import PdfFileWriter, PdfFileReader
+from io import BytesIO
+
 from django.conf import settings
 from django.core.files import File
 from django.db import models, transaction
@@ -228,6 +232,54 @@ class Document(models.Model):
         else:
             if _commit_events:
                 event_document_properties_edit.commit(actor=user, target=self)
+
+    def register_watermark_in(self):
+        input_file = PdfFileReader(self.open())
+        first_page = input_file.getPage(0)
+
+        box = first_page.mediaBox
+        cvs = canvas.Canvas('/tmp/watermark.pdf')
+        cvs.drawString(20, 20, "Documento nr. {}".format(self.pk))
+        cvs.drawString(20, 10, "Protocollato il {}".format(self.date_added))
+        cvs.save()
+
+        mark = PdfFileReader(open("/tmp/watermark.pdf", "rb"))
+        output_buf = PdfFileWriter()
+        output_file = self.latest_version.open(mode="wb")
+
+        first_page.mergePage(mark.getPage(0))
+        output_buf.addPage(first_page)
+
+        for page_number in range(1, input_file.getNumPages() - 1):
+            input_page = input_file.getPage(page_number)
+            output_buf.addPage(input_page)
+
+        output_buf.write(output_file)
+
+    def register_watermark_out(self):
+        self.new_version(self.versions.first().file, "Protocollato in uscita")
+        input_file = PdfFileReader(self.latest_version.open())
+        first_page = input_file.getPage(0)
+
+        box = first_page.mediaBox
+        cvs = canvas.Canvas('/tmp/watermark.pdf')
+        cvs.drawString(box.lowerRight[0] / 2, 20, "Documento nr. {}".format(self.latest_version.pk))
+        cvs.drawString(box.lowerRight[0] / 2, 10, "Protocollato in uscita il {}".format(self.latest_version.timestamp))
+        cvs.save()
+
+        mark = PdfFileReader(open("/tmp/watermark.pdf", "rb"))
+        output_buf = PdfFileWriter()
+        output_file = BytesIO()
+
+        first_page.mergePage(mark.getPage(0))
+        output_buf.addPage(first_page)
+
+        for page_number in range(1, input_file.getNumPages() - 1):
+            input_page = input_file.getPage(page_number)
+            output_buf.addPage(input_page)
+
+        output_buf.write(output_file)
+        return output_file
 
     class Meta:
         verbose_name = _('Document')
@@ -542,15 +594,15 @@ class DocumentVersion(models.Model):
         for page in self.pages.all():
             page.invalidate_cache()
 
-    def open(self, raw=False):
+    def open(self, raw=False, mode="r"):
         """
         Return a file descriptor to a document version's file irrespective of
         the storage backend
         """
         if raw:
-            return self.file.storage.open(self.file.name)
+            return self.file.storage.open(self.file.name, mode=mode)
         else:
-            result = self.file.storage.open(self.file.name)
+            result = self.file.storage.open(self.file.name, mode=mode)
             for key in sorted(DocumentVersion._pre_open_hooks):
                 result = DocumentVersion._pre_open_hooks[key](
                     file_object=result, document_version=self

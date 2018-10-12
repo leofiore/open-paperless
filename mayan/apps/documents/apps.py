@@ -349,6 +349,9 @@ class DocumentsApp(MayanAppConfig):
                 'documents.tasks.task_generate_document_page_image': {
                     'queue': 'converter'
                 },
+                'documents.tasks.task_watermark_register_in': {
+                    'queue': 'converter'
+                },
                 'documents.tasks.task_update_page_count': {
                     'queue': 'uploads'
                 },

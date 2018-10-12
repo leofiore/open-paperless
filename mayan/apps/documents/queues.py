@@ -41,6 +41,11 @@ queue_converter.add_task_type(
     label=_('Generate document page image')
 )
 
+queue_converter.add_task_type(
+    name='documents.tasks.task_watermark_register_in',
+    label=_('Register mark')
+)
+
 queue_uploads.add_task_type(
     name='documents.tasks.task_update_page_count',
     label=_('Update document page count')

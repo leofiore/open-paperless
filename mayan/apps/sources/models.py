@@ -128,6 +128,15 @@ class Source(models.Model):
                 )
                 document.delete(to_trash=False)
                 raise
+            try:
+                document.register_watermark_in()
+            except Exception as exception:
+                logger.critical(
+                    'Unexpected exception while trying to watermark '
+                    'new document "%s" from source "%s"; %s',
+                    label or file_object.name, self, exception
+                )
+                raise
 
     def handle_upload(self, file_object, description=None, document_type=None, expand=False, label=None, language=None, metadata_dict_list=None, metadata_dictionary=None, tag_ids=None, user=None):
         """

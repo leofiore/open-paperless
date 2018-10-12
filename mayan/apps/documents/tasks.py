@@ -68,6 +68,17 @@ def task_delete_stubs():
 
 
 @app.task()
+def task_watermark_register_in(document_id, *args, **kwargs):
+    Document = apps.get_model(
+        app_label='documents', model_name='Document'
+    )
+
+    document = Document.objects.get(pk=document_id)
+
+    return document.register_watermark_in(*args, **kwargs)
+
+
+@app.task()
 def task_generate_document_page_image(document_page_id, *args, **kwargs):
     DocumentPage = apps.get_model(
         app_label='documents', model_name='DocumentPage'

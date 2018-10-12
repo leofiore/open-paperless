@@ -125,6 +125,42 @@ class APIDocumentDownloadView(DownloadMixin, generics.RetrieveAPIView):
         return self.render_to_response()
 
 
+class APIDocumentPDFWatermarkRegisterView(DownloadMixin, generics.RetrieveAPIView):
+    """
+    Download the latest version of a document.
+    ---
+    GET:
+        omit_serializer: true
+        parameters:
+            - name: pk
+              paramType: path
+              type: number
+    """
+
+    mayan_object_permissions = {
+        'GET': (permission_document_download,)
+    }
+    permission_classes = (MayanPermission,)
+    queryset = Document.objects.all()
+
+    def get_encoding(self):
+        return self.get_object().latest_version.encoding
+
+    def get_file(self):
+        instance = self.get_object()
+        marked = instance.latest_version.document.register_watermark_out()
+        return VirtualFile(marked, name=instance.label)
+
+    def get_mimetype(self):
+        return self.get_object().latest_version.mimetype
+
+    def get_serializer_class(self):
+        return None
+
+    def retrieve(self, request, *args, **kwargs):
+        return self.render_to_response()
+
+
 class APIDocumentListView(generics.ListCreateAPIView):
     filter_backends = (MayanObjectPermissionsFilter,)
     mayan_object_permissions = {'GET': (permission_document_view,)}
@@ -146,6 +182,7 @@ class APIDocumentListView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(_user=self.request.user)
+        logger.info(self.request)
 
     def post(self, *args, **kwargs):
         """
@@ -178,6 +215,7 @@ class APIDocumentListView(generics.ListCreateAPIView):
             - code: 202
               message: Accepted
         """
+        logger.info(self.request)
         return super(APIDocumentListView, self).post(*args, **kwargs)
 
 

@@ -10,7 +10,7 @@ from .api_views import (
     APIDocumentTypeDocumentListView, APIDocumentTypeListView,
     APIDocumentTypeView, APIDocumentVersionsListView,
     APIDocumentVersionPageListView, APIDocumentVersionView,
-    APIRecentDocumentListView
+    APIRecentDocumentListView, APIDocumentPDFWatermarkRegisterView
 )
 from .views import (
     ClearImageCacheView, DeletedDocumentDeleteView,
@@ -291,6 +291,10 @@ api_urls = [
     url(
         r'^documents/(?P<pk>[0-9]+)/download/$',
         APIDocumentDownloadView.as_view(), name='document-download'
+    ),
+    url(
+        r'^documents/(?P<pk>[0-9]+)/watermarkout/$',
+        APIDocumentPDFWatermarkRegisterView.as_view(), name='document-register-out'
     ),
     url(
         r'^documents/(?P<pk>[0-9]+)/versions/$',
