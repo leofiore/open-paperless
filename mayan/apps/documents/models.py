@@ -253,7 +253,7 @@ class Document(models.Model):
         first_page.mergePage(mark.getPage(0))
         output_buf.addPage(first_page)
 
-        for page_number in range(1, input_file.getNumPages() - 1):
+        for page_number in range(1, input_file.getNumPages()):
             input_page = input_file.getPage(page_number)
             output_buf.addPage(input_page)
 
@@ -278,7 +278,7 @@ class Document(models.Model):
         first_page.mergePage(mark.getPage(0))
         output_buf.addPage(first_page)
 
-        for page_number in range(1, input_file.getNumPages() - 1):
+        for page_number in range(1, input_file.getNumPages()):
             input_page = input_file.getPage(page_number)
             output_buf.addPage(input_page)
 
