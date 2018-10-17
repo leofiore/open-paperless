@@ -234,7 +234,11 @@ class Document(models.Model):
                 event_document_properties_edit.commit(actor=user, target=self)
 
     def register_watermark_in(self):
-        input_file = PdfFileReader(self.open())
+        buf = BytesIO()
+        with self.open() as ifile:
+            buf.write(ifile.read())
+            buf.seek(0)
+        input_file = PdfFileReader(buf)
         first_page = input_file.getPage(0)
 
         box = first_page.mediaBox
@@ -245,7 +249,6 @@ class Document(models.Model):
 
         mark = PdfFileReader(open("/tmp/watermark.pdf", "rb"))
         output_buf = PdfFileWriter()
-        output_file = self.latest_version.open(mode="wb")
 
         first_page.mergePage(mark.getPage(0))
         output_buf.addPage(first_page)
@@ -254,6 +257,7 @@ class Document(models.Model):
             input_page = input_file.getPage(page_number)
             output_buf.addPage(input_page)
 
+        output_file = self.latest_version.open(mode="wb")
         output_buf.write(output_file)
 
     def register_watermark_out(self):
