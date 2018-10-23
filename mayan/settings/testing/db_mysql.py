@@ -9,7 +9,7 @@ DATABASES = {
         'NAME': os.getenv('DATABASE_NAME', 'mayan_edms'),
         'USER': os.getenv('DATABASE_USER', 'root'),
         'HOST': os.getenv('DATABASE_HOST', '127.0.0.1'),
-        'PASS': os.getenv('DATABASE_PASS', ''),
+        'PASSWORD': os.getenv('DATABASE_PASS', ''),
         'PORT': os.getenv('DATABASE_PORT', '3306'),
     }
 }

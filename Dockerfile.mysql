@@ -13,12 +13,12 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/v$ALPINE_VERSION/community" >> /e
     && pip install mysqlclient \
     && apk del --purge --no-cache musl-dev linux-headers gcc g++
 
-ENV DATABASE_NAME mayan_edms
-ENV DATABASE_USER paperless
-ENV DATABASE_HOST mysql
-ENV DATABASE_PASSWORD serin
-ENV DATABASE_PORT "3306"
-ENV REDIS_URL "redis://127.0.0.1:6379/0"
+#ENV DATABASE_NAME mayan_edms
+#ENV DATABASE_USER paperless
+#ENV DATABASE_HOST mysql
+#ENV DATABASE_PASS FILLME
+#ENV DATABASE_PORT "3306"
+#ENV REDIS_URL "redis://127.0.0.1:6379/0"
 ENV DJANGO_SETTINGS_MODULE "mayan.settings.testing.db_mysql"
 
 COPY . .

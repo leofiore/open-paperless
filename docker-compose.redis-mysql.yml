@@ -25,5 +25,5 @@ services:
       DATABASE_USER: root
       DATABASE_HOST: mysql
       DATABASE_PORT: 3306
-      DATABASE_PASS: serin
+      DATABASE_PASS: FILLME
       REDIS_URL: "redis://redis:6379/0"
