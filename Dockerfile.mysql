@@ -27,4 +27,4 @@ RUN ./manage.py collectstatic --noinput
 
 EXPOSE 8000
 
-CMD supervisord -c /usr/src/app/supervisord-sqlite.ini
+CMD supervisord -n -c /usr/src/app/supervisord-sqlite.ini
